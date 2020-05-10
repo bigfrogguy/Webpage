@@ -1,0 +1,87 @@
+---
+title: "GAnorexia Nervosa and Genetics"
+output: html_document
+date: "2020-05-01"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+
+
+
+
+
+
+
+
+## The Effects of Genetically Modified Ghrelin Receptor Protein and Ghrelin O-Acyltransferase on the Development of Anorexia Nervosa
+### Andrew Callan
+
+
+
+
+
+
+
+
+
+####  In humans, an eating disorder can manifest in many different ways. One of the most common eating disorders is Anorexia nervosa, which is described as an immense fear of gaining weight, self-starvation, and an extreme focus on one’s own body image. Anorexia Nervosa can manifest as behaviors avoidance of food, a restrictive diet of only foods deemed “clean”, an obsession with regular exercise, etc. Eating disorders are the product of both environmental and genetic factors. Environmental factors have been identified as things like social media and cultural norms surrounding food and body appearance. As for the genetic factor, there are many different places to study, but an area of particular interest to researchers is the hormone ghrelin. Ghrelin is a peptide hormone and is the only hormone originating from the gastrointestinal tract that is also responsible for regulating appetite. When a person is hungry, their ghrelin levels will be higher than those directly after eating. Given that ghrelin is a hormone, it is the ligand to the ghrelin receptor, ghrelinR. GhrelinR is encoded by the GHSR gene, and it has been shown that in mice with an inactive ghrelinR gene there showed a decreased amount of food anticipatory behavior. (Müller et al., 2011). Ghrelin is produced in an inactive form, which is later activated by a ghrelin O-acyltransferase, also known as GOAT. Because ghrelin must be “activated” to cause the feeling of fullness, overexpression or underexpression of the gene that transcribes GOAT will have an indirect effect on the activity of ghrelin and its subsequent signal pathway. Genetic modifications of the MBOAT4 gene, which alters the production of the GOAT enzyme, or the GHRL gene, which alters the production of ghrelinR, can lead to the overexpression or underexpression of the ghrelin hormone. Over time, these effects can lead to significant weight gain or loss. While these effects are purely physical, they can lead to lasting psychological disorders.  A fear of gaining weight is common in American culture, therefore the long-term effects of the previously described genetic modifications are eating disorders like Anorexia nervosa, as a means to counteract the altered behavior of the ghrelin pathway. Genetic modifications that result in the inactivation of ghrelin receptors or the overproduction of the GOAT enzyme disrupt ghrelin’s function of regulating eating behavior and therefore predispose people with those genetic mutations to developing an Anorexia nervosa (Atalayer, Gibson, Konopacka, & Gelieber, 2013).
+####	 Ghrelin is a peptide hormone that is produced by endocrine cells in the stomach. It is the only circulating, orexigenic hormone researchers have identified. This gives the hormone extreme importance when studying what causes altered eating behaviors at a cellular level. Ghrelin’s purpose is to signal that it is time to eat by increasing plasma levels of ghrelin. This active ghrelin crosses the blood-brain barrier and binds to the ghrelin receptor in the hypothalamus, ghrelinR. GhrelinR is a G-protein receptor, and it is a product of the GHSR gene. After ghrelinR is bound to the ghrelin hormone, the ghrelin pathway begins to signal food anticipation. A regular rhythm of rises and falls of plasma levels of ghrelin creates a daily eating routine. When this pathway is disrupted, however, eating behaviors become abnormal (Atalayer, Gibson, Konopacka, & Gelieber, 2013).
+####	Until recently, ghrelinR’s role in dietary behavior has been unknown. Researchers at the Rudolf Magnus Institute of Neuroscience conducted an experiment to test what the effects of a genetic knockout of the ghrelin receptor would be on the food anticipatory behaviors of three different groups of mice: wild type, schedule-fed ghrelinR knockout, and ghrelinR knockout that were pair-fed with the wild type. The pair-fed mice were included to account for the schedule-fed mice showing a lower caloric intake over time, resulting in fatigue that could affect the duration of their exercise. Food anticipatory behavior was of interest to the researchers because it is a behavior that can be seen across many different species including humans. Alike humans, when mice are anticipating mealtime, they begin to show increased physical activity. This makes food anticipatory behaviors a particularly important behavior to study, as it is something that can be related to human behavior. These three groups of mice were subject to the ABA model, which is a process of inducing anorexia nervosa traits by limiting the amount of food the mice receive over a span of four days. This model results in the mice participating in increased hours of exercise, which is a common symptom among humans diagnosed with anorexia nervosa. Mice were given food ad libitum for two hours before beginning a routine of being fed once every two hours. Their food anticipatory behavior and body weight were recorded every two hours, too. Food anticipatory behavior was recorded by logging the amount of time the mice spent running on the activity wheel. Results of the study showed wild type mice performed typical food anticipatory behaviors as each 2-hour time period neared completion, reaching a peak of 1200 revolutions per hour. The schedule-fed ghrelinR knock out mice showed food anticipatory behavior, but at a much smaller degree. Researchers recorded a peak of about 650 revolutions per hour. Finally, pair-fed ghrelinR knockout mice showed no such trend of food anticipatory behavior. The peak of the pair-fed ghrelinR knockout mice was around 100 revolutions per hour. Even after pair-fed ghrelinR knockout mice were given food ad libitum after the ABA model study was completed, they were not able to develop these food anticipatory behaviors again. These results show the reduced expression of the gene encoding for the ghrelin receptor had significant effects on the ability of the mice to anticipate when it was necessary to eat (Verhagen et al., 2011). Food anticipatory behaviors are more complex than just increased movement, but wheel-spinning allows researchers to determine that rats are anticipating their next meal. With this research, it can be expected that humans with a deleterious mutation on the GHSR gene who begin to show behaviors of anorexia nervosa, like increased exercise and decreased diet, are more likely to develop the inability to anticipate meals, whereas people without this inactivated gene would still be able to anticipate mealtimes, even after showing increased activity and decreased food intake. This predisposes those with the inactivated gene to anorexia nervosa.
+####	For ghrelin to bind to the ghrelin receptor and trigger the ghrelin receptor pathway, it must first undergo post-translational activation. When ghrelin is translated, it is originally pro-ghrelin. Pro-ghrelin is an inactive form of ghrelin which is activated by the ghrelin O-acyltransferase enzyme, GOAT. GOAT attaches an 8-carbon fatty acid chain to the serine 3, allowing it to bind to the ghrelin receptor proteins. Without this post-translational modification to the pro-ghrelin protein, the ghrelin is completely inactive. A study was done by researchers at the Institute of Neurogastroenterology and Motility to understand how blood plasma GOAT protein levels compare between people of different BMIs and people with and without Anorexia nervosa. Participants were separated into three different groups. Participants with a BMI of between 18.5 and 25 kg/m2 were sorted into the “normal BMI” group. Participants with a BMI of less than 17.5 kg/m2 were in the “Anorexia nervosa” group. Participants with a BMI greater than 30 were in the “obese” study group. Blood samples of all participants were collected, and protein samples were extracted to then be analyzed with a Western blot. The results showed a positive correlation between plasma GOAT protein levels and BMI. Participants in the “Anorexia nervosa” group showed an average 42% lower GOAT protein concentration compared to the “normal BMI” group. The “obese” group had an average 34% higher GOAT protein concentration compared to the “normal BMI” group. Given that plasma ghrelin levels are negatively correlated with BMI, a person with Anorexia nervosa would most likely show decreased expression of the GOAT protein gene while showing increased expression of the ghrelin protein gene. This seems to reinforce the Anorexia by having less GOAT to acylate the ghrelin, leaving the ghrelin in its inactive form (Goebel-Stengel et al., 2013)
+####	While a decrease in expression of the ghrelin O-acyltransferase gene may maintain an eating disorder, studies have shown that hyperactivity of the gene may put someone at increased risk for developing one. The code for GOAT enzyme is found on chromosome 8p12, and, because this enzyme is vital to the function of ghrelin, modification of the MBOAT4 gene would have a direct effect on the overall ghrelin pathway. Genotype testing was done in Germany with 543 people with Anorexia nervosa and 612 people without Anorexia nervosa to see if there were significant genetic differences found between the two groups when looking at genes that are involved in the production of GOAT. Six tagSNPs were determined to explain 96% of the genetic variability of the coding region of interest. The participants submitted DNA samples to then be analyzed with a restriction fragment length polymorphism analysis. The results of the patients’ genetic variations were tested to see if they deviated Harvey-Weinberg equilibrium, and a logistic regression was performed to calculate odds ratios and confidence intervals to determine the risk of developing Anorexia nervosa for each genotype. The results showed that the G/G genotype at the rs10096097 SNP was significantly associated with participants who were diagnosed with Anorexia nervosa. The logistic regression was used to calculate confidence intervals and odds ratios of each genotype at the rs10096097 SNP, and the G/G genotype estimated an odds ratio of 1.613 with a confidence interval of 1.037-2.508. This genotype would code for a hyperfunction of the ghrelin O-acyltransferase gene, which would then cause an increase in the activated ghrelin circulating in the blood. While research is still being done as to why exactly this may predispose someone to Anorexia nervosa, the results still show a significant association between this particular SNP and the development of the disorder. Continuing research into specific genetic mutations associated with Anorexia nervosa potentially offers a starting point to look at how these could be treated (Müller et al., 2011).
+####	Ghrelin, the ghrelin receptor, and ghrelin O-acyl transferase play a crucial role in the regulation of our diets. Whether it be the physiological response our bodies make in anticipation of an upcoming meal or the ability of our bodies to signal hunger, without these three proteins working normally, the human body cannot maintain healthy, regular eating behaviors. The consequences of altered function of these proteins are not just a few missed meals or a slightly irregular eating schedule, but a psychological disorder. Because an eating disorder, like anything, is a result of a genetic component and an environmental component, the answer for what causes an eating disorder is very complex. Researchers have much work to do in understanding what exactly can genetically cause an eating disorder like Anorexia nervosa, but much has been done in the way of better understanding the disorder itself and what genetically may leave someone at an increased risk to developing an eating disorder like Anorexia nervosa. Currently, the inactivation of the gene for ghrelin receptors has proved to negatively affect the ability of mice to anticipate meals, proving the ghrelin receptor’s significance in regulating eating schedules and behaviors. Both hyperactivity and hypoactivity of the ghrelin O-acyltransferase gene have shown to have increased the likelihood of the development of an eating disorder. In the case of hypoactivity, the GOAT protein levels are not high enough to activate the inactive ghrelin, and, in the case of hyperactivity, there has been an observed association with a hyperactive mutation and development of Anorexia nervosa. The ghrelin protein, ghrelin receptor, and ghrelin O-acyltransferase work together to create a stable eating equilibrium, and any single disruption to that equilibrium can result in disordered eating, so looking at just one component of the ghrelin pathway will not paint the full picture. It is necessary to understand the entire equilibrium if a solution is to be found.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+### Works Cited
+
+#### Atalayer, D., Gibson, C., Konopacka, A., & Geliebter, A. (2013). Ghrelin and eating 	disorders. Progress in Neuro-Psychopharmacology and Biological Psychiatry, 40, 70–82. 
+
+#### Goebel-Stengel, M., Hofmann, T., Elbelt, U., Teuffel, P., Ahnis, A., Kobelt, P., … Stengel, A. 	(2013). The ghrelin activating enzyme ghrelin-O-acyltransferase (GOAT) is present in 	human plasma and expressed dependent on body mass index. Peptides, 43, 13–19.
+
+#### Müller, T. D., Tschöp, M. H., Jarick, I., Ehrlich, S., Scherag, S., Herpertz-Dahlmann, B., … 	Hinney, A. (2011). Genetic variation of the ghrelin activator gene ghrelin O-	acyltransferase (GOAT) is associated with anorexia nervosa. Journal of Psychiatric 	Research, 45(5), 706–711.
+
+#### Verhagen, L. A., Egecioglu, E., Luijendijk, M. C., Hillebrand, J. J., Adan, R. A., & Dickson, S. 	L. (2011). Acute and chronic suppression of the central ghrelin signaling system reveals 	a role in food anticipatory activity. European Neuropsychopharmacology, 21(5), 384–	392.

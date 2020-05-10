@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="author" content="Andrew Callan" />
+    <meta name="description" content="Describe your website">
+    <link rel="shortcut icon" type="image/x-icon" href="/img/favicon.ico">
+    <title>Cigarette Usage Project</title>
+    <meta name="generator" content="Hugo 0.70.0" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="/css/main.css" />
+    <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" />
+    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:200,400,200bold,400old" />
+    
+    <!--[if lt IE 9]>
+			<script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+			<script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+		<![endif]-->
+
+    
+  </head>
+
+  <body>
+    <div id="wrap">
+
+      
+      <nav class="navbar navbar-default">
+  <div class="container">
+    <div class="navbar-header">
+      <a class="navbar-brand" href="/"><i class="fa fa-home"></i></a>
+      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+    </div>
+    <div class="navbar-collapse collapse" id="navbar">
+      <ul class="nav navbar-nav navbar-right">
+      
+        
+        <li><a href="/blog/">BLOG</a></li>
+        
+        <li><a href="/projects/">PROJECTS</a></li>
+        
+        <li><a href="/resume.pdf">RESUME</a></li>
+        
+      
+      </ul>
+    </div>
+  </div>
+</nav>
+
+      
+      <div class="container">
+        <div class="blog-post">
+          <h3>
+            <strong><a href="/project1/">Cigarette Usage Project</a></strong>
+          </h3>
+        </div>
+        <div class="blog-title">
+          <h4>
+          March 4, 2020
+            &nbsp;&nbsp;
+            
+          </h4>
+        </div>
+        <div class="panel panel-default">
+          <div class="panel-body">
+            <div class="blogpost">
+              
+
+
+<div id="introduction" class="section level3">
+<h3>Introduction:</h3>
+<p>This dataset lists data for cigarette sales and price for every state in the United States for each year between 1963 and 1992. This dataset also includes the per capita disposable income at the time the observation was taken, the population size, and the population size above the age of 16. I split the dataset in half where one dataset had the “year”, “sales”, and “price” variables and the other dataset had the “state”, “pop”, “pop16”, and “ndi” variables. The data was obtained by an economics journal studyign to observed the changes in these variables over time. I found this dataset interesting because since the 60s, more and more information has been advertized about the detrimental heal effects smoking cigarettes has on the human body. I wanted to understand what effect that spread of information and the overall shifting cultural perception of tobacco had on the variables studied.</p>
+</div>
+<div id="question-1" class="section level3">
+<h3>Question 1:</h3>
+</div>
+<div id="tidy-and-untidy-your-datasets" class="section level2">
+<h2>Tidy and untidy your datasets</h2>
+<pre class="r"><code>Cigar &lt;- read.csv(&#39;https://vincentarelbundock.github.io/Rdatasets/csv/Ecdat/Cigar.csv&#39;)
+library(tidyverse)</code></pre>
+<pre><code>## ── Attaching packages ─────────────────────────────────────────────────────── tidyverse 1.3.0 ──</code></pre>
+<pre><code>## ✓ ggplot2 3.2.1     ✓ purrr   0.3.3
+## ✓ tibble  2.1.3     ✓ dplyr   0.8.4
+## ✓ tidyr   1.0.2     ✓ stringr 1.4.0
+## ✓ readr   1.3.1     ✓ forcats 0.4.0</code></pre>
+<pre><code>## ── Conflicts ────────────────────────────────────────────────────────── tidyverse_conflicts() ──
+## x dplyr::filter() masks stats::filter()
+## x dplyr::lag()    masks stats::lag()</code></pre>
+<pre class="r"><code>cigar1 &lt;- Cigar %&gt;% select(X,year,sales,price)
+cigar2 &lt;- Cigar %&gt;% select(X,state,pop,pop16,ndi) %&gt;%
+  mutate_at(c(&quot;X&quot;),as.character)
+
+cigar1 &lt;- cigar1 %&gt;% pivot_wider(names_from = X, values_from = year)
+cigar1 &lt;- cigar1 %&gt;%
+  pivot_longer(c(3:1382),names_to = &quot;X&quot;, values_to = &quot;year&quot;) %&gt;% na.omit()</code></pre>
+<p>Because the datasets I had were already tidy, I displayed by ability to pivot datasets by pivoting “cigar1” wider by taking all the values from the “X” column and making those variable names. I chose the values from the “year” column to be the values for these new variables. I then reversed this action by pivoting longer and resetting the “X” variables back to values in their own column, doing the same for “year” and then omitting all of the NAs that this action created.</p>
+<div id="question-2" class="section level3">
+<h3>Question 2:</h3>
+</div>
+</div>
+<div id="join-your-2-separate-data-sources-into-a-single-dataset" class="section level2">
+<h2>Join your 2+ separate data sources into a single dataset</h2>
+<pre class="r"><code>CigarFull &lt;- cigar1 %&gt;% left_join(cigar2)</code></pre>
+<pre><code>## Joining, by = &quot;X&quot;</code></pre>
+<p>After the join, the final table has just as many observations as the two datasets used in the join, meaning that no observations were dropped. This is because both “cigar1” and “cigar2” came from the same original dataset, so all observations in the “X1” used for the join should have a match. I chose a left join, but I could have used a right join, inner join, or a full join, too. This is because there is an exact, unique match for each observation in X1, so there is not a concern for NA values.</p>
+<div id="question-3" class="section level3">
+<h3>Question 3</h3>
+</div>
+</div>
+<div id="use-all-6-core-dplyr-functions-filter-select-arrange-group_by-mutate-summarize" class="section level2">
+<h2>Use all 6 core dplyr functions (filter, select, arrange, group_by, mutate, summarize)</h2>
+<pre class="r"><code>CigarFull &lt;- CigarFull %&gt;% mutate_at(c(&quot;state&quot;),as.character)
+CigarFull &lt;- CigarFull %&gt;%
+  mutate(age_brackets = case_when(year&gt;=90 ~ &quot;90+&quot;, 80&lt;=year &amp; year&lt;=89 ~ &quot;80-89&quot;, 70&lt;=year &amp; year&lt;=79 ~ &quot;70-79&quot;, year&lt;=69 ~ &quot;60-69&quot;))
+CigarFull &lt;- CigarFull %&gt;% group_by(year) %&gt;%mutate(avgprice = mean(price))
+CigarFull &lt;- CigarFull %&gt;% mutate(prop16=pop16/pop)
+
+CigarFull %&gt;% group_by(year) %&gt;% summarise(mean(sales))</code></pre>
+<pre><code>## # A tibble: 30 x 2
+##     year `mean(sales)`
+##    &lt;int&gt;         &lt;dbl&gt;
+##  1    63          127.
+##  2    64          124.
+##  3    65          126.
+##  4    66          126.
+##  5    67          126.
+##  6    68          124.
+##  7    69          123.
+##  8    70          120.
+##  9    71          123.
+## 10    72          128.
+## # … with 20 more rows</code></pre>
+<pre class="r"><code>CigarFull%&gt;% select(state,pop,price) %&gt;% filter(price&gt;mean(price)) %&gt;%
+  group_by(state) %&gt;% arrange(desc(price))</code></pre>
+<pre><code>## Adding missing grouping variables: `year`</code></pre>
+<pre><code>## # A tibble: 701 x 4
+## # Groups:   state [42]
+##     year state    pop price
+##    &lt;int&gt; &lt;chr&gt;  &lt;dbl&gt; &lt;dbl&gt;
+##  1    92 5     30703.  202.
+##  2    92 48     5152.  199.
+##  3    92 33    18086.  198.
+##  4    92 24     4496.  198.
+##  5    92 29     1297.  194.
+##  6    92 7      3237   194.
+##  7    92 31     7799.  191.
+##  8    92 40     1002   190 
+##  9    92 20     1237   188.
+## 10    92 9       570.  187.
+## # … with 691 more rows</code></pre>
+<pre class="r"><code>CigarFull &lt;- CigarFull %&gt;% ungroup()</code></pre>
+<p>I changed the “state” variable from a numeric variable to a character variable by using the mutate function. I then used mutate to create a new variable called “age_brackets” which is a character variable describing the decade that each datapoint belongs to. Ithen created a new variable called “avgprice” which took the mean of the cigarette prices across the US for each year by grouping by the “year” variable. I, also, created a column named “prop16” which calculated the proportion of the population over the age of 16 to the total population size. Next, by grouping by year, I was able to calculate the mean sales of cigarettes across the US by then taking the mean of sales. Lastly, created a function to create a descending list of the price of cigarettes by state, but only the states whose cigarette price was greater than the mean price of cigarettes across all states. To undo the grouping functions I assigned to my overall dataset, I ran my dataset through the ungroup function.</p>
+</div>
+<div id="create-summary-statistics-mean-sd-var-n-quantile-min-max-n_distinct-cor-etc-for-each-of-your-numeric-variables-both-overall-and-after-grouping-by-one-of-your-categorical-variables" class="section level2">
+<h2>Create summary statistics (mean, sd, var, n, quantile, min, max, n_distinct, cor, etc) for each of your numeric variables both overall and after grouping by one of your categorical variables</h2>
+<pre class="r"><code>CigarFull %&gt;% summarize_if(is.numeric,mean)</code></pre>
+<pre><code>## # A tibble: 1 x 8
+##   sales price  year   pop pop16   ndi avgprice prop16
+##   &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;    &lt;dbl&gt;  &lt;dbl&gt;
+## 1  124.  68.7  77.5 4537. 3367. 7525.     68.7  0.734</code></pre>
+<pre class="r"><code>CigarFull %&gt;% summarize_if(is.numeric,sd)</code></pre>
+<pre><code>## # A tibble: 1 x 8
+##   sales price  year   pop pop16   ndi avgprice prop16
+##   &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;    &lt;dbl&gt;  &lt;dbl&gt;
+## 1  31.0  42.0  8.66 4829. 3642. 4748.     41.4 0.0411</code></pre>
+<pre class="r"><code>CigarFull %&gt;% summarize_if(is.numeric,var)</code></pre>
+<pre><code>## # A tibble: 1 x 8
+##   sales price  year       pop     pop16       ndi avgprice  prop16
+##   &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;   &lt;dbl&gt;
+## 1  960. 1763.  75.0 23317661. 13263051. 22542163.    1716. 0.00169</code></pre>
+<pre class="r"><code>CigarFull %&gt;% summarize_if(is.numeric,min)</code></pre>
+<pre><code>## # A tibble: 1 x 8
+##   sales price  year   pop pop16   ndi avgprice prop16
+##   &lt;dbl&gt; &lt;dbl&gt; &lt;int&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;    &lt;dbl&gt;  &lt;dbl&gt;
+## 1  53.4  23.4    63   319  215. 1323.     27.1  0.608</code></pre>
+<pre class="r"><code>CigarFull %&gt;% summarize_if(is.numeric,max)</code></pre>
+<pre><code>## # A tibble: 1 x 8
+##   sales price  year    pop pop16   ndi avgprice prop16
+##   &lt;dbl&gt; &lt;dbl&gt; &lt;int&gt;  &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;    &lt;dbl&gt;  &lt;dbl&gt;
+## 1  298.  202.    92 30703. 22920 23074     173.  0.911</code></pre>
+<pre class="r"><code>CigarFull %&gt;% summarize_if(is.numeric,n_distinct)</code></pre>
+<pre><code>## # A tibble: 1 x 8
+##   sales price  year   pop pop16   ndi avgprice prop16
+##   &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt;    &lt;int&gt;  &lt;int&gt;
+## 1   689   767    30  1247  1341  1376       30   1376</code></pre>
+<pre class="r"><code>CigarFull %&gt;% filter(state==&quot;1&quot;|state==&quot;5&quot;|state==&quot;3&quot;|state==&quot;4&quot;) %&gt;%
+  group_by(state) %&gt;% summarize_if(is.numeric,mean)</code></pre>
+<pre><code>## # A tibble: 4 x 9
+##   state sales price  year    pop  pop16   ndi avgprice prop16
+##   &lt;chr&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt;    &lt;dbl&gt;  &lt;dbl&gt;
+## 1 1      107.  69.1  77.5  3768.  2741. 6131.     68.7  0.725
+## 2 3      113.  67.5  77.5  2499.  1822. 7187.     68.7  0.719
+## 3 4      115.  69.4  77.5  2172.  1597. 6002.     68.7  0.733
+## 4 5      115.  71.5  77.5 23149. 17339. 9028.     68.7  0.745</code></pre>
+<pre class="r"><code>CigarFull %&gt;% filter(state==&quot;1&quot;|state==&quot;5&quot;|state==&quot;3&quot;|state==&quot;4&quot;) %&gt;%
+  group_by(state) %&gt;% summarize_if(is.numeric,min)</code></pre>
+<pre><code>## # A tibble: 4 x 9
+##   state sales price  year   pop  pop16   ndi avgprice prop16
+##   &lt;chr&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;int&gt; &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt;    &lt;dbl&gt;  &lt;dbl&gt;
+## 1 1      88.4  28.6    63  3383  2236. 1558.     27.1  0.661
+## 2 3      79    23.9    63  1517   982. 1945.     27.1  0.648
+## 3 4      98.9  27      63  1907  1297. 1480.     27.1  0.680
+## 4 5      67.5  25.3    63 17556 12072  2776.     27.1  0.688</code></pre>
+<pre class="r"><code>CigarFull %&gt;% filter(state==&quot;1&quot;|state==&quot;5&quot;|state==&quot;3&quot;|state==&quot;4&quot;) %&gt;%
+  group_by(state) %&gt;% summarize_if(is.numeric,max)</code></pre>
+<pre><code>## # A tibble: 4 x 9
+##   state sales price  year    pop  pop16   ndi avgprice prop16
+##   &lt;chr&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;int&gt;  &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt;    &lt;dbl&gt;  &lt;dbl&gt;
+## 1 1      123.  172.    92  4226.  3227. 14533     173.  0.763
+## 2 3      133.  166.    92  3762.  2805. 15179     173.  0.759
+## 3 4      132.  177.    92  2460.  1877. 13879     173.  0.763
+## 4 5      142   202.    92 30703. 22920  18495     173.  0.881</code></pre>
+<pre class="r"><code>CigarFull %&gt;% filter(state==&quot;1&quot;|state==&quot;5&quot;|state==&quot;3&quot;|state==&quot;4&quot;) %&gt;%
+  group_by(state) %&gt;% summarize_if(is.numeric,sd)</code></pre>
+<pre><code>## # A tibble: 4 x 9
+##   state sales price  year   pop pop16   ndi avgprice prop16
+##   &lt;chr&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;    &lt;dbl&gt;  &lt;dbl&gt;
+## 1 1      10.7  39.6  8.80  269.  319. 3944.     42.1 0.0351
+## 2 3      13.3  40.7  8.80  748.  622. 4364.     42.1 0.0401
+## 3 4      10.8  41.5  8.80  189.  198. 3814.     42.1 0.0297
+## 4 5      20.6  48.3  8.80 3995. 3531. 5264.     42.1 0.0397</code></pre>
+<p>I began by creating multiple small tables using only my numeric variables to explore the mean, standard deviation, variance, minimum, maximum, and distinct number of observations for each of the variables across the entire dataset. Then, I did the same thing, but I grouped by state to see how these values differed between a select few states, namely states 1, 5, 3, and 4.</p>
+<div id="question-4" class="section level3">
+<h3>Question 4</h3>
+</div>
+</div>
+<div id="make-a-correlation-heatmap-of-your-numeric-variables" class="section level2">
+<h2>Make a correlation heatmap of your numeric variables</h2>
+<pre class="r"><code>CigarFull%&gt;%select_if(is.numeric)%&gt;%cor%&gt;%as.data.frame%&gt;%
+rownames_to_column%&gt;%pivot_longer(-1)%&gt;%
+ggplot(aes(rowname,name,fill=value))+geom_tile()+
+geom_text(aes(label=round(value,2)))+
+xlab(&quot;&quot;)+ylab(&quot;&quot;)+scale_fill_gradient2(low=&quot;red&quot;,high=&quot;blue&quot;)</code></pre>
+<p><img src="/project1_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
+</div>
+<div id="create-at-least-two-additional-plots-of-your-choice-with-ggplot-that-highlight-some-of-the-more-interesting-findings-that-your-descriptive-statistics-have-turned-up" class="section level2">
+<h2>Create at least two additional plots of your choice with ggplot that highlight some of the more interesting findings that your descriptive statistics have turned up</h2>
+<pre class="r"><code>CigarFull %&gt;% ggplot(aes(x = state, y = price, fill=state))+
+geom_bar(stat=&quot;summary&quot;,fun.y=&quot;mean&quot;, position=&quot;dodge&quot;)+
+geom_errorbar(stat=&quot;summary&quot;,position=&quot;dodge&quot;) +
+  facet_wrap(~age_brackets) + ggtitle(&quot;Price of Cigarettes over Four Decades&quot;) + theme(axis.text.x =element_blank(),
+legend.position=&quot;none&quot;) +scale_y_continuous(labels=scales::dollar) +
+  xlab(&quot;State&quot;) + ylab(&quot;Price&quot;)</code></pre>
+<pre><code>## No summary function supplied, defaulting to `mean_se()
+## No summary function supplied, defaulting to `mean_se()
+## No summary function supplied, defaulting to `mean_se()
+## No summary function supplied, defaulting to `mean_se()</code></pre>
+<p><img src="/project1_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
+<p>This plot depicts the price of cigarettes for each state at four different decades. By faceting by decade, I can tell that the price of ciagrettes has increased 3-4 times from the 60s to the 90s, and that the price of cigarettes between states is relatively equivalent for each decade, however the 80s and 90s show more differences between states than the 60s and 70s do.</p>
+<pre class="r"><code>CigarFull %&gt;% ggplot(aes(ndi,sales))+
+geom_point(size=2,aes(color=price))+
+scale_color_gradient(low=&quot;blue&quot;, high=&quot;red&quot;) +
+  ggtitle(&quot;Per Capita Disposable Income vs Cigarette Sales and Price&quot;) +
+  xlab(&quot;Per Capita Disposable Income&quot;) +
+  ylab(&quot;Sales&quot;) + scale_y_continuous(breaks=seq(0, 300, 50))</code></pre>
+<p><img src="/project1_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
+<p>This plot shows the reltationship between the recorded per capita disposable income, cigarette sales, and the the price of cigarettes. This data shows that times of high per capita disposable income are associated more with lower cigarette sales and higher prices of cigarettes, which times of lower per capita disposable income are associated with slightly higher sales of cigarettes and a lower price per pack.</p>
+<div id="question-5" class="section level3">
+<h3>Question 5</h3>
+</div>
+</div>
+<div id="perform-k-meanspam-clustering-your-numeric-variables" class="section level2">
+<h2>Perform k-means/PAM clustering your numeric variables</h2>
+<pre class="r"><code>library(cluster)
+ThreeYears &lt;- CigarFull %&gt;% filter(year==&#39;70&#39;|year==&#39;80&#39;|year==&#39;90&#39;)
+pam1 &lt;- ThreeYears %&gt;% pam(k=3)</code></pre>
+<pre><code>## Warning in data.matrix(x): NAs introduced by coercion</code></pre>
+<pre class="r"><code>pamclust &lt;- ThreeYears %&gt;% mutate(cluster=as.factor(pam1$cluster))
+pamclust %&gt;% ggplot(aes(price,pop16, color=cluster, shape=age_brackets)) +
+  geom_point()</code></pre>
+<p><img src="/project1_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
+<p>I decided to filter my data for just the data for the years 1970, 1980, and 1990. I did this because I wanted to see if the PAM function would be able to separate the three years into three different clusters. I saved this filtered dataset as ‘ThreeYears’ and then ran PAM for three clusters, since I had used data for three different years, and named that dataset ‘pam1’. I then created a dataset called ‘pamclust’ which was just the ‘pam1’ dataset but with a column identifying which cluster each observation belonged to. Finally, I plotted ‘pamclust’ using geom_point and the variables ‘price’ and ‘pop16’ as the x and y axes, respectively. I assigned each clusted to a different color and each year to a different shape to assess how accurate the PAM clustering was.
+Although the PAM clustering ultimately was not exactly right, it did separate the 1990 data from the 1970 and 1980 data. However, the points near the top of the graph were incorrectly given a separate cluster.</p>
+</div>
+
+              <hr>
+              <div class="related-posts">
+                <h5>Related Posts</h5>
+                
+              </div>
+            </div>
+          </div>
+          <hr>
+        <div class="disqus">
+  <div id="disqus_thread"></div>
+  <script type="text/javascript">
+
+    (function() {
+      
+      
+      if (window.location.hostname == "localhost")
+        return;
+
+      var disqus_shortname = '';
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+  </script>
+  <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  <a href="http://disqus.com/" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+</div>
+        </div>
+      </div>
+      
+    </div>
+
+    
+    <footer>
+  <div id="footer">
+    <div class="container">
+      <p class="text-muted">&copy; All rights reserved. Powered by <a href="https://gohugo.io/">Hugo</a> and
+      <a href="http://www.github.com/nurlansu/hugo-sustain/">sustain</a> with ♥</p>
+    </div>
+  </div>
+</footer>
+<div class="footer"></div>
+
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+<script src="/js/docs.min.js"></script>
+<script src="/js/main.js"></script>
+
+<script src="/js/ie10-viewport-bug-workaround.js"></script>
+
+
+    
+  </body>
+</html>

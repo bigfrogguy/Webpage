@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Blogs on Portfolio</title>
+    <link>/blog/</link>
+    <description>Recent content in Blogs on Portfolio</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-US</language>
+    <lastBuildDate>Sun, 10 May 2020 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="/blog/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Practicing with Python and R</title>
+      <link>/blog/practicing-python/</link>
+      <pubDate>Sun, 10 May 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/blog/practicing-python/</guid>
+      <description>Using both R and Python at the same time can be something really fun. To show you, I’m gonna run the reticulate library to allow these different languages to communicate. Starting with R, I’m gonna assign this string of characters to “TheHonest”.
+library(reticulate) TheHonest &amp;lt;- &amp;quot;Kate Bush&amp;#39;s 1982 record The Dreaming&amp;quot; Next, switching to python, I’m going to save this string of characters to “Truth”. Finally, I’m going to print out the result of both of these strings in this python code chunk using the print function.</description>
+    </item>
+    
+  </channel>
+</rss>

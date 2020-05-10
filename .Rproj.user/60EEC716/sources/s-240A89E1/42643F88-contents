@@ -1,0 +1,296 @@
+---
+title: "Crohn's Disease"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+library(knitr)
+hook_output = knit_hooks$get('output')
+knit_hooks$set(output = function(x, options) {
+  # this hook is used only when the linewidth option is not NULL
+  if (!is.null(n <- options$linewidth)) {
+    x = knitr:::split_lines(x)
+    # any lines wider than n should be wrapped
+    if (any(nchar(x) > n)) x = strwrap(x, width = n)
+    x = paste(x, collapse = '\n')
+  }
+  hook_output(x, options)
+})
+
+knitr::opts_chunk$set(echo = TRUE, eval = TRUE,fig.align="center",warning=FALSE,message=FALSE,fig.width=8, fig.height=5, linewidth=60)
+options(tibble.width = 100,width = 100)
+library(tidyverse)
+```
+##An analysis by Andrew Callan
+```{R}
+CrohnD <- read.csv("https://vincentarelbundock.github.io/Rdatasets/csv/robustbase/CrohnD.csv")
+head(CrohnD)
+?CrohnD
+```
+
+This dataset is the results from a study on 117 Crohn's disease patients and the adverse effects they experienced while taking a drug for their Crohn's disease. The 'ID' column is a numeric variable that identifies each unique patient. The 'nrAdvE' variable is a numeric variable that counts the number of adverse events the patient reported experiencing. 'BMI' is the recorded BMI of each patient ([kg]/[m^2]). The 'height' column is each patient's recorded height in centimeters. All patients were from one of two countries, so the binary variable 'Country' separates the patients into either 0 or 1. 'Sex' is a binary factor separating patients into the categories Male or Female. The 'age' column is a numeric variable describing the patient's age in years. The 'weight' varibable is the patient's weight in kilograms. Finally, the 'treat; variable is a categorical variable describing whether the patient was taking the placebo drug, drug dose 1, or drug dose 2.
+
+
+
+#MANOVA
+```{R}
+man1<-manova(cbind(nrAdvE, weight, BMI, height)~treat, data=CrohnD)
+summary(man1)
+
+
+1-(0.95^1) #5% chance of a type 1 error
+0.05/1 #0.05 is the Bonferroni correction
+```
+
+The variables nrAdvE, weight, BMI, and height were all numerical variables that were tested to see if there was a mean difference between the three different treatment groups. The MANOVA showed no significance between the treatment groups for any of the numeric variables tested.  Since there was no significance found, I did not perform univariate ANOVAs or post-hoc t-tests. Therefore, the alpha value is not adjusted and will remain at 0.05. There is 5% change of a type 1 error.
+As for assumptions, because this data is patient data, it is likely not a random sample of people. I can assume that the observations are indpendent of each other. MANOVA assumes that the response variables show multivariate normality, which is a difficult assumption to make. MANOVA also assumes that there is homogeneity of within-group covariance matrices, which is also a high barrier. Because these are very difficult to reach and the results did not yield any significance, it is saf to assume these assumptions were not met. MANOVA assumes no extreme univariate or covariate outliers, which is likely not met. Finally, MANOVA assumes no multicolinearity. This is likely broken, since variables like "weigh", "height", and "BMI" are dependent on each other. Therefore, we would see the variables be highly correlated.
+
+
+
+#PERMANOVA
+```{R}
+library(vegan)
+dists<-CrohnD%>%select(nrAdvE, BMI, height, weight)%>%dist()
+adonis(dists~treat,data=CrohnD)
+```
+
+```{R}
+#compute observed F
+SST<- sum(dists^2)/117
+SSW<-CrohnD%>%group_by(treat)%>%select(nrAdvE, BMI, height, weight)%>%
+do(d=dist(.[2:3],"euclidean"))%>%ungroup()%>%
+summarize(sum(d[[1]]^2)/50 + sum(d[[2]]^2)/50+ sum(d[[3]]^2)/50)%>%pull
+F_obs<-((SST-SSW)/2)/(SSW/114)
+
+Fs<-replicate(1000,{
+new<-CrohnD%>%mutate(treat=sample(treat))
+SSW<-new%>%group_by(treat)%>%select(nrAdvE, BMI, height, weight)%>%
+do(d=dist(.[2:3],"euclidean"))%>%ungroup()%>%
+summarize(sum(d[[1]]^2)/50 + sum(d[[2]]^2)/50+ sum(d[[3]]^2)/50)%>%pull
+((SST-SSW)/2)/(SSW/114)
+})
+
+{hist(Fs,prob = T); abline(v=F_obs, col="red", add=T)}
+mean(Fs>F_obs)
+```
+
+Null Hypothesis: The center and spread of all three treament groups were the same.
+Alternate Hypothesis: At least one of the group's center or spead was different than the others.
+The p-vaule is greater than 0.05, meaning that the three treatment groups do not have significantly different centers or spreads.
+
+
+#Linear Regression
+```{R}
+CrohnD$nrAdvE_c=CrohnD$nrAdvE-mean(CrohnD$nrAdvE)
+CrohnD$height_c=CrohnD$height-mean(CrohnD$height)
+CrohnD$weight_c=CrohnD$weight-mean(CrohnD$weight)
+CrohnD$BMI_c=CrohnD$BMI-mean(CrohnD$BMI)
+CrohnD <- CrohnD %>% mutate(treat=as.factor(treat))
+fit <-lm(nrAdvE ~ treat*BMI_c, data=CrohnD)
+summary(fit)
+coef(fit)
+```
+
+Predicted number of adverse side effects for someone with an average BMI in the placebo treatment group is 2.53520 events. Patients with an average BMI in the d1 treatment group had on average 0.91887 fewer adverse side effect events than patients in the placebo treatment group. For patients with an average BMI in the d2 treatment group, there was an average of 0.38953 fewer adverse side effect events than patients in the placebo treatment group. As BMI increases by 1 for patients in the placebo treatment group, the number of adverse side effect events increases on average by 0.22035. The slope for BMI on the number of adverse side effect events is 0.04939 lower for the d1 treatment group than the placebo treatment group. The slope for BMI on number of adverse side effect events is 0.24037 lower for the d2 treatment group than the placebo treatment group.
+
+
+
+```{R}
+CrohnD %>% ggplot(aes(BMI_c, nrAdvE , color = treat)) + 
+geom_point() + geom_smooth(method = 'lm', se = F, fullrange = T) + 
+ggtitle("Linear Regression Predicting Number of Adverse Side Effect 
+Events with BMI and Treatment Group") + 
+  ylab("Number of Adverse Side Effect Events") + xlab("BMI") + 
+  labs(color = "Treament Group")
+```
+
+```{R}
+#Testing Normality
+resids<-lm(nrAdvE ~ treat*BMI_c, data=CrohnD)$residuals
+shapiro.test(resids) #reject null, there is no normality
+
+#Testing Homoskedasticity
+library(sandwich)
+library(lmtest)
+bptest(fit) # fail to reject null, homoskedastic
+
+#Testing Linerity
+CrohnD %>% filter(treat == "placebo") %>% ggplot(aes(BMI_c, nrAdvE)) + geom_point()
+CrohnD %>% filter(treat == "d1") %>% ggplot(aes(BMI_c, nrAdvE)) + geom_point()
+CrohnD %>% filter(treat == "d2") %>% ggplot(aes(BMI_c, nrAdvE)) + geom_point()
+#No clear linearity
+
+#Test with Robust Standard Errors
+coeftest(fit, vcov=vcovHC(fit))
+```
+
+Using robust standard errors, no variable showed significance, unlike when the linear regression was initially run and BMI_c did show singificance. No estimates changed between the two tests.
+According to the initial linear regression results, adjusted for the number of variables used, this model accounts for 4.67% of variation in the number of adverse side effect events.
+
+
+#Bootstrapped Standard Errors
+```{R}
+boot_dat<- sample_frac(CrohnD, replace=T)
+
+samp_distn<-replicate(5000, {
+boot_dat <- sample_frac(CrohnD, replace=T) 
+fit <- lm(nrAdvE~BMI_c*treat, data=boot_dat)
+coef(fit)
+})
+summary(fit)
+samp_distn%>%t%>%as.data.frame%>%summarize_all(sd)
+```
+
+The bootstraped standard errors are very similar to the robust stardard errors and the original standard errors. Most values are only smaller by about 0.02, which we would expect to not affect the resulting p-value by much at all. I do not believe that these bootstrapped standard errors will make any variables significant.
+
+
+#Logistic Regression
+```{R}
+CrohnD_new <- CrohnD %>% mutate(treat_b=ifelse(treat=="placebo",0,1)) %>% select(-ID)
+fit1<-glm(treat_b~BMI_c+nrAdvE,data=CrohnD_new,family=binomial(link="logit"))
+coeftest(fit1)
+exp(coef(fit1))
+predicted <- predict(fit1, type = "response")
+pred<-ifelse(predicted>.5,1,0)
+table(prediction=pred, truth=CrohnD_new$treat_b)%>%addmargins
+
+#Accuracy
+(2+76)/117
+
+#TPR
+76/78
+
+#TNR
+2/39
+
+#PPV
+76/113
+
+```
+
+For every increase in BMI of 1, the odds of the patient being from either drug group increases by 1.0475237. For every increase in the number of adverse side effect events of 1, the odds of the patient being from either drug group increases by 0.9136054.
+This model has an accuracy of 66.67%, meaning it correctly classified 66.67% of cases. This model has a TPR of 97.44%, meaning 97.44% of drug patients were correctly classified. The TNR of this model is 5.13%, meaning 5.13% of placebo patients were classified correctly. This model shows a PPV of 67.26%, signifying that 67.26% of patients classified as from a drug group by the model actually were from a drug group.
+
+```{R}
+CrohnD_new$logit <- predict(fit1, data = CrohnD_new, type = "link")
+CrohnD_new$treat_b<-factor(CrohnD_new$treat_b,levels=c("1","0"))
+CrohnD_new <- CrohnD_new %>% mutate(treatment=ifelse(treat=="placebo","placebo","drug"))
+ggplot(CrohnD_new,aes(logit,fill=treatment))+geom_density(alpha=.3)+
+  geom_vline(xintercept=0,lty=2) + ggtitle("Density of log-odds by Treatment Group")
+```
+
+```{R}
+library(plotROC)
+CrohnD_new <- CrohnD_new %>% mutate(treat_b=ifelse(treat=='placebo',0,1))
+CrohnD_new$prob<-predict(fit1,type="response")
+ROCplot <- ggplot(CrohnD_new)+geom_roc(aes(d=treat_b,m=prob), n.cuts=0)
+ROCplot
+calc_auc(ROCplot)
+```
+
+This ROC plote shows an AUC of 0.6015779, which means this model is poor at predicting the treatment group of a patient.
+
+```{R}
+CrohnD <- CrohnD_new %>% mutate(y=ifelse(treat_b=="0",0,1))
+fit <- glm(y~nrAdvE+BMI_c,data=CrohnD,family="binomial")
+prob <- predict(fit,type="response")
+
+
+
+class_diag<-function(probs,truth){
+if(is.numeric(truth)==FALSE & is.logical(truth)==FALSE) truth<-as.numeric(truth)-1
+tab<-table(factor(probs>.5,levels=c("FALSE","TRUE")),truth)
+prediction<-ifelse(probs>.5,1,0)
+acc=mean(truth==prediction)
+sens=mean(prediction[truth==1]==1)
+spec=mean(prediction[truth==0]==0)
+ppv=mean(truth[prediction==1]==1)
+
+ord<-order(probs, decreasing=TRUE)
+probs <- probs[ord]; truth <- truth[ord]
+TPR=cumsum(truth)/max(1,sum(truth))
+FPR=cumsum(!truth)/max(1,sum(!truth))
+dup<-c(probs[-1]>=probs[-length(probs)], FALSE)
+TPR<-c(0,TPR[!dup],1); FPR<-c(0,FPR[!dup],1)
+n <- length(TPR)
+auc<- sum( ((TPR[-1]+TPR[-n])/2) * (FPR[-1]-FPR[-n]) )
+data.frame(acc,sens,spec,ppv,auc)
+}
+
+
+
+set.seed(1234)
+k=10 
+data<-CrohnD[sample(nrow(CrohnD)),] 
+folds<-cut(seq(1:nrow(CrohnD)),breaks=k,labels=F) 
+diags<-NULL
+for(i in 1:k){
+
+train<-data[folds!=i,]
+test<-data[folds==i,]
+truth<-test$y
+
+fit<-glm(y~nrAdvE+BMI_c,data=train,family="binomial")
+
+probs<-predict(fit,newdata = test,type="response")
+
+diags<-rbind(diags,class_diag(probs,truth))
+}
+summarize_all(diags,mean) 
+```
+
+This 10-fold Cross Validation demonstrated 63.11% accuracy, 94.31% sensitivity (recall), a 2% specificity. This model has AUC of 0.5781911, making is a very poor predictor of treatment group.
+
+
+#LASSO Regression
+```{R}
+library(glmnet)
+CrohnD2 <- CrohnD %>% select(1:8,treat_b,-treat)
+y<-as.matrix(CrohnD2$treat_b) 
+x<-model.matrix(treat_b~-1+.,data=CrohnD2) 
+head(x)
+
+
+cv<-cv.glmnet(x,y, family = 'binomial')
+lasso<-glmnet(x,y,family = 'binomial', lambda=cv$lambda.1se)
+coef(lasso)
+```
+
+The only variable that seems to help predict the outcome of this variable is the number of adverse side effect events, and even that was extremely small. This will be the only variable retained.
+
+
+```{R}
+set.seed(1234)
+k=10 
+
+data1<-CrohnD2[sample(nrow(CrohnD2)),] 
+folds<-cut(seq(1:nrow(CrohnD2)),breaks=k,labels=F) 
+diags<-NULL
+for(i in 1:k){
+
+train<-data1[folds!=i,]
+test<-data1[folds==i,]
+truth<-test$treat_b
+
+fit<-glm(treat_b~nrAdvE,data=train,family="binomial")
+probs<-predict(fit,newdata = test,type="response")
+
+diags<-rbind(diags,class_diag(probs,truth))
+}
+diags%>%summarize_all(mean)
+```
+
+The AUC for this out-of-sample model is 0.5775397, which is slightly worse than the original model's accuracy of 0.5781911. Given that the too models show very similar AUCs, I can assume the original model was not overfitted.
+
+
+
+
+
+
+
+
+
+
+

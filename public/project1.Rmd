@@ -1,0 +1,134 @@
+---
+title: "Cigarette Usage Project"
+author: "Andrew Callan"
+date: "2020-03-04"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+### Introduction:
+  This dataset lists data for cigarette sales and price for every state in the United States for each year between 1963 and 1992. This dataset also includes the per capita disposable income at the time the observation was taken, the population size, and the population size above the age of 16. I split the dataset in half where one dataset had the "year", "sales", and "price" variables and the other dataset had the "state", "pop", "pop16", and "ndi" variables. The data was obtained by an economics journal studyign to observed the changes in these variables over time. I found this dataset interesting because since the 60s, more and more information has been advertized about the detrimental heal effects smoking cigarettes has on the human body. I wanted to understand what effect that spread of information and the overall shifting cultural perception of tobacco had on the variables studied.
+
+
+### Question 1:
+## Tidy and untidy your datasets
+```{r}
+Cigar <- read.csv('https://vincentarelbundock.github.io/Rdatasets/csv/Ecdat/Cigar.csv')
+library(tidyverse)
+cigar1 <- Cigar %>% select(X,year,sales,price)
+cigar2 <- Cigar %>% select(X,state,pop,pop16,ndi) %>%
+  mutate_at(c("X"),as.character)
+
+cigar1 <- cigar1 %>% pivot_wider(names_from = X, values_from = year)
+cigar1 <- cigar1 %>%
+  pivot_longer(c(3:1382),names_to = "X", values_to = "year") %>% na.omit()
+```
+
+  Because the datasets I had were already tidy, I displayed by ability to pivot datasets by pivoting "cigar1" wider by taking all the values from the "X" column and making those variable names. I chose the values from the "year" column to be the values for these new variables. I then reversed this action by pivoting longer and resetting the "X" variables back to values in their own column, doing the same for "year" and then omitting all of the NAs that this action created.
+
+### Question 2:
+## Join your 2+ separate data sources into a single dataset
+```{r}
+CigarFull <- cigar1 %>% left_join(cigar2)
+```
+
+  After the join, the final table has just as many observations as the two datasets used in the join, meaning that no observations were dropped. This is because both "cigar1" and "cigar2" came from the same original dataset, so all observations in the "X1" used for the join should have a match. I chose a left join, but I could have used a right join, inner join, or a full join, too. This is because there is an exact, unique match for each observation in X1, so there is not a concern for NA values.
+
+### Question 3
+## Use all 6 core dplyr functions (filter, select, arrange, group_by, mutate, summarize)
+```{r}
+CigarFull <- CigarFull %>% mutate_at(c("state"),as.character)
+CigarFull <- CigarFull %>%
+  mutate(age_brackets = case_when(year>=90 ~ "90+", 80<=year & year<=89 ~ "80-89", 70<=year & year<=79 ~ "70-79", year<=69 ~ "60-69"))
+CigarFull <- CigarFull %>% group_by(year) %>%mutate(avgprice = mean(price))
+CigarFull <- CigarFull %>% mutate(prop16=pop16/pop)
+
+CigarFull %>% group_by(year) %>% summarise(mean(sales))
+
+CigarFull%>% select(state,pop,price) %>% filter(price>mean(price)) %>%
+  group_by(state) %>% arrange(desc(price))
+
+CigarFull <- CigarFull %>% ungroup()
+
+```
+
+  I changed the "state" variable from a numeric variable to a character variable by using the mutate function. I then used mutate to create a new variable called "age_brackets" which is a character variable describing the decade that each datapoint belongs to. Ithen created a new variable called "avgprice" which took the mean of the cigarette prices across the US for each year by grouping by the "year" variable. I, also, created a column named "prop16" which calculated the proportion of the population over the age of 16 to the total population size. Next, by grouping by year, I was able to calculate the mean sales of cigarettes across the US by then taking the mean of sales. Lastly, created a function to create a descending list of the price of cigarettes by state, but only the states whose cigarette price was greater than the mean price of cigarettes across all states. To undo the grouping functions I assigned to my overall dataset, I ran my dataset through the ungroup function.
+
+## Create summary statistics (mean, sd, var, n, quantile, min, max, n_distinct, cor, etc) for each of your numeric variables both overall and after grouping by one of your categorical variables
+
+```{r}
+CigarFull %>% summarize_if(is.numeric,mean)
+CigarFull %>% summarize_if(is.numeric,sd)
+CigarFull %>% summarize_if(is.numeric,var)
+CigarFull %>% summarize_if(is.numeric,min)
+CigarFull %>% summarize_if(is.numeric,max)
+CigarFull %>% summarize_if(is.numeric,n_distinct)
+
+
+CigarFull %>% filter(state=="1"|state=="5"|state=="3"|state=="4") %>%
+  group_by(state) %>% summarize_if(is.numeric,mean)
+
+CigarFull %>% filter(state=="1"|state=="5"|state=="3"|state=="4") %>%
+  group_by(state) %>% summarize_if(is.numeric,min)
+
+CigarFull %>% filter(state=="1"|state=="5"|state=="3"|state=="4") %>%
+  group_by(state) %>% summarize_if(is.numeric,max)
+
+CigarFull %>% filter(state=="1"|state=="5"|state=="3"|state=="4") %>%
+  group_by(state) %>% summarize_if(is.numeric,sd)
+```
+
+  I began by creating multiple small tables using only my numeric variables to explore the mean, standard deviation, variance, minimum, maximum, and distinct number of observations for each of the variables across the entire dataset. Then, I did the same thing, but I grouped by state to see how these values differed between a select few states, namely states 1, 5, 3, and 4.
+
+### Question 4
+## Make a correlation heatmap of your numeric variables
+```{r}
+CigarFull%>%select_if(is.numeric)%>%cor%>%as.data.frame%>%
+rownames_to_column%>%pivot_longer(-1)%>%
+ggplot(aes(rowname,name,fill=value))+geom_tile()+
+geom_text(aes(label=round(value,2)))+
+xlab("")+ylab("")+scale_fill_gradient2(low="red",high="blue")
+```
+
+## Create at least two additional plots of your choice with ggplot that highlight some of the more interesting findings that your descriptive statistics have turned up
+```{r}
+CigarFull %>% ggplot(aes(x = state, y = price, fill=state))+
+geom_bar(stat="summary",fun.y="mean", position="dodge")+
+geom_errorbar(stat="summary",position="dodge") +
+  facet_wrap(~age_brackets) + ggtitle("Price of Cigarettes over Four Decades") + theme(axis.text.x =element_blank(),
+legend.position="none") +scale_y_continuous(labels=scales::dollar) +
+  xlab("State") + ylab("Price")
+```
+
+  This plot depicts the price of cigarettes for each state at four different decades. By faceting by decade, I can tell that the price of ciagrettes has increased 3-4 times from the 60s to the 90s, and that the price of cigarettes between states is relatively equivalent for each decade, however the 80s and 90s show more differences between states than the 60s and 70s do.
+
+```{r}
+CigarFull %>% ggplot(aes(ndi,sales))+
+geom_point(size=2,aes(color=price))+
+scale_color_gradient(low="blue", high="red") +
+  ggtitle("Per Capita Disposable Income vs Cigarette Sales and Price") +
+  xlab("Per Capita Disposable Income") +
+  ylab("Sales") + scale_y_continuous(breaks=seq(0, 300, 50))
+```
+
+  This plot shows the reltationship between the recorded per capita disposable income, cigarette sales, and the the price of cigarettes. This data shows that times of high per capita disposable income are associated more with lower cigarette sales and higher prices of cigarettes, which times of lower per capita disposable income are associated with slightly higher sales of cigarettes and a lower price per pack.
+
+### Question 5
+## Perform k-means/PAM clustering your numeric variables
+```{r}
+library(cluster)
+ThreeYears <- CigarFull %>% filter(year=='70'|year=='80'|year=='90')
+pam1 <- ThreeYears %>% pam(k=3)
+pamclust <- ThreeYears %>% mutate(cluster=as.factor(pam1$cluster))
+pamclust %>% ggplot(aes(price,pop16, color=cluster, shape=age_brackets)) +
+  geom_point()
+```
+
+I decided to filter my data for just the data for the years 1970, 1980, and 1990. I did this because I wanted to see if the PAM function would be able to separate the three years into three different clusters. I saved this filtered dataset as 'ThreeYears' and then ran PAM for three clusters, since I had used data for three different years, and named that dataset 'pam1'. I then created a dataset called 'pamclust' which was just the 'pam1' dataset but with a column identifying which cluster each observation belonged to. Finally, I plotted 'pamclust' using geom_point and the variables 'price' and 'pop16' as the x and y axes, respectively. I assigned each clusted to a different color and each year to a different shape to assess how accurate the PAM clustering was. 
+  Although the PAM clustering ultimately was not exactly right, it did separate the 1990 data from the 1970 and 1980 data. However, the points near the top of the graph were incorrectly given a separate cluster.
+
